@@ -1,0 +1,4 @@
+config:
+  graylog_server: 127.0.0.1
+  graylog_server_port: 12201
+  app_name: 'awesome_app'

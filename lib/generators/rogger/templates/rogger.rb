@@ -1,0 +1,1 @@
+Rogger.load!("config/rogger.yml")
