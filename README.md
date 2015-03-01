@@ -26,6 +26,15 @@ To get started
 $ rails g rogger:config
 ```
 
+## Disable application-level logging
+
+To disallow Rogger from logging Rails application level messages, in your
+generated config/rogger.yml, set
+
+```
+  app_logging: false
+```
+
 TODO: Write usage instructions here
 
 ## Contributing
