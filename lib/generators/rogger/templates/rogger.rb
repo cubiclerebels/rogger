@@ -1,1 +1,2 @@
-Rogger.load!("config/rogger.yml")
+#Rogger.load!("config/rogger.yml")
+require 'rogger/config'

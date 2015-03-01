@@ -1,4 +1,3 @@
-
 module Rogger
   module Generators
 
@@ -11,6 +10,7 @@ module Rogger
 
       def create_config_file
         copy_file 'rogger.yml', 'config/rogger.yml'
+        copy_file 'rogger.rb', 'config/initializers/rogger.rb'
       end
     end
 
