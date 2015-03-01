@@ -20,5 +20,6 @@ module Rogger
     config_file['config']['graylog_server_port'], "WAN", 
     { :host => config_file['config']['app_name'], 
       :environment =>  environment })
+  Rails.logger = @@logger unless !config_file['config']['app_logging']
 
 end
