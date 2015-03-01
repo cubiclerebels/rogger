@@ -20,6 +20,12 @@ Or install it yourself as:
 
 ## Usage
 
+To get started
+
+```bash
+$ rails g rogger:config
+```
+
 TODO: Write usage instructions here
 
 ## Contributing
