@@ -18,8 +18,13 @@ module Rogger
   @@logger = GELF::Logger.new(
     config_file['config']['graylog_server'], 
     config_file['config']['graylog_server_port'], "WAN", 
-    { :host => config_file['config']['app_name'], 
+    { :host => config_file['config']['app_name'],
       :environment =>  environment })
-  Rails.logger = @@logger unless !config_file['config']['app_logging']
+
+  if config_file['config']['log_to_file']
+    Rails.logger.extend(ActiveSupport::Logger.broadcast(@@logger)) unless !config_file['config']['app_logging']
+  else
+    Rails.logger = @@logger unless !config_file['config']['app_logging']
+  end
 
 end

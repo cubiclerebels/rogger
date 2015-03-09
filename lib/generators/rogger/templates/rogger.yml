@@ -3,3 +3,4 @@ config:
   graylog_server_port: 12201
   app_name: 'awesome_app'
   app_logging: true
+  log_to_file: true

@@ -35,6 +35,10 @@ generated config/rogger.yml, set
   app_logging: false
 ```
 
+## Disable local file logging
+
+By default, Rogger will extend itself from Rails logger, meaning that log messages will continue to log to local log files (`development.log` or `production.log`). To disable this and make Rogger the only logger, set `log_to_file` to `false`.
+
 TODO: Write usage instructions here
 
 ## Contributing
