@@ -27,4 +27,14 @@ module Rogger
     Rails.logger = @@logger unless !config_file['config']['app_logging']
   end
 
+  @@notifier = GELF::Notifier.new(config_file['config']['graylog_server'], config_file['config']['graylog_server_port'])
+
+  def self.logger
+    @@logger
+  end
+
+  def self.notifier
+    @@notifier
+  end
+
 end
