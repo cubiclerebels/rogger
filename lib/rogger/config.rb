@@ -22,8 +22,8 @@ module Rogger
       ActiveSupport::Logger.new("log/#{Rails.env}.log")
     end
 
-    production_log = ActiveSupport::Logger.new('log/meh.log')
-    Rails.logger.extend ActiveSupport::Logger.broadcast(production_log)
+    env_log = ActiveSupport::Logger.new("log/#{Rails.env}.log")
+    Rails.logger.extend ActiveSupport::Logger.broadcast(env_log)
 
     environment = Rogger::Config.env_name
 
