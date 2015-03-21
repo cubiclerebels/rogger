@@ -42,6 +42,7 @@ stuff to graylog. To do so, adjust your environments/*.rb file to add the
 following line:
 
 ```ruby
+  require 'rogger/config'
   config.lograge = Rogger::Config.lograge
   config.logger = Rogger::Config.logger
 
