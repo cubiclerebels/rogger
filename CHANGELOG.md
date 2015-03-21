@@ -2,6 +2,7 @@
 
 ## v0.0.3
 - Added lograge as dependency
+- Added file logging by default
 
 ## v0.0.2 - 09-03-2015
 - Extend Rails logger to include Gelf, instead of overriding it. Add log_to_file option to reflect this change. See `README` for info on usage.
