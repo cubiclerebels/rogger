@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.0.4
+- Allow ERB parsing on config/rogger.yml for more interactivity!
+
 ## v0.0.3
 - Added lograge as dependency
 - Added file logging by default
