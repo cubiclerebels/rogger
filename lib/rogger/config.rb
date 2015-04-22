@@ -28,11 +28,12 @@ module Rogger
     environment = Rogger::Config.env_name
 
     config_file = YAML.load(ERB.new(File.read("#{Rails.root}/config/rogger.yml")).result)
+    app_name = config_file['config']["#{Rails.env}"]['app_name'] || config_file['config']['app_name']
 
     @@logger = GELF::Logger.new(
       config_file['config']['graylog_server'], 
-      config_file['config']['graylog_server_port'], "WAN", 
-      { :host => config_file['config']['app_name'],
+      config_file['config']['graylog_server_port'], "WAN",
+      { :host => app_name,
         :environment =>  environment })
 
     if config_file['config']['log_to_file']
