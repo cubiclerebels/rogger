@@ -28,7 +28,7 @@ module Rogger
     environment = Rogger::Config.env_name
 
     config_file = YAML.load(ERB.new(File.read("#{Rails.root}/config/rogger.yml")).result)
-    app_name = config_file['config']["#{Rails.env}"]['app_name'] || config_file['config']['app_name']
+    app_name = config_file['config'].try(:[], "#{Rails.env}").try(:[], 'app_name') || config_file['config']['app_name']
 
     @@logger = GELF::Logger.new(
       config_file['config']['graylog_server'], 
