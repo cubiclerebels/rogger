@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.0.5
+- Allow users to select specialized app_names depending on the environment that
+  their app is running
+
 ## v0.0.4
 - Allow ERB parsing on config/rogger.yml for more interactivity!
 
