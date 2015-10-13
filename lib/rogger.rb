@@ -1,4 +1,5 @@
 require 'rogger/version'
+require 'rogger/utils'
 require 'rogger/errors'
 require 'rogger/log'
 

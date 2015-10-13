@@ -1,6 +1,16 @@
-config:
-  graylog_server: 127.0.0.1
-  graylog_server_port: 12201
-  app_name: 'awesome_app'
+default:
+  host: 127.0.0.1
+  port: 12201
+  app_name: <%= Rails.application.class.parent if defined?(Rails) %>
   app_logging: true
   log_to_file: true
+  protocol: udp
+
+development:
+  <<: *default
+
+staging:
+  <<: *default
+
+production:
+  <<: *default
