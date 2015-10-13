@@ -2,18 +2,19 @@ module Rogger
   module Errors
 
     class RoggerError < StandardError
-      def compose_message(key, attributes)
-        key + attributes.to_s
-      end
     end
 
-
-    class NoEnvironment
-      def initialize
-        super(compose_message("no_environment"), {})
-      end
+    class NoEnvironment < RoggerError
     end
 
-    
+    class InvalidProtocolError < RoggerError
+    end
+
+    class InvalidIpError < RoggerError
+    end
+
+    class InvalidPortError < RoggerError
+    end
+
   end
 end
