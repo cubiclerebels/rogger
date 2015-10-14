@@ -59,8 +59,6 @@ gem 'gelf', github: 'siawyoung/gelf-rb'
 
 Once `gelf-rb` updates with TCP support, this will no longer be necessary.
 
-## Setup logging
-
 ## Lograge
 
 Rogger works perfectly well with Lograge. In fact, we highly recommend using Lograge, as default Rails logging is too verbose for production debugging. 
@@ -87,6 +85,21 @@ def append_info_to_payload(payload)
   payload[:ip] = request.headers['HTTP_X_REAL_IP'] || request.remote_ip
 end
 ```
+
+## Tips
+
+Don't forget to increase your production `log_level` to at least `:info` to avoid being inundated by useless logs.
+
+### Development
+
+Rogger can be used in development as well. To turn off the verbose Active Record logging, simply add this line:
+
+```ruby
+# development.rb
+config.active_record.logger = nil
+```
+
+Many more excellent tips [here](http://rubyjunky.com/cleaning-up-rails-4-production-logging.html).
 
 ## Contributing
 
