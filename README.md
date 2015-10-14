@@ -11,9 +11,7 @@ The easiest way to log your Rails apps to Graylog2!
 Add this line to your application's Gemfile:
 
 ```ruby
-source 'https://repo.fury.io/davidchua/' do
-  gem 'rogger'
-end
+gem 'rogger', source: 'https://repo.fury.io/davidchua/'
 ```
 
 And then execute:
