@@ -9,11 +9,16 @@ module Rogger
 
       include Errors
       include Utils
-      attr_reader :protocol, :server_hostname, :server_port, :app_name, :app_logging, :log_to_file
+      attr_reader :protocol, :server_hostname, :server_port, :app_name, :app_logging, :log_to_file, :disabled
 
       def initialize(file_location)
         @config_file = YAML.load(ERB.new(File.read(file_location)).result)
         @env_hash    = @config_file[Config.env] || @config_file['default']
+        @disabled          ||= set_disabled
+
+        # short circuit initialization if disabled:true is set for current environment
+        return nil if @disabled
+        
         @protocol          ||= set_protocol
         @server_hostname   ||= set_server_hostname
         @server_port       ||= set_server_port
@@ -23,6 +28,11 @@ module Rogger
       end
 
       private
+
+      def set_disabled
+        @env_hash['disabled'] == true
+      end
+
       def set_protocol
         case @env_hash['protocol']
           when "tcp" then GELF::Protocol::TCP
@@ -94,31 +104,40 @@ module Rogger
       x.custom_options = lambda do |event|
         unwanted_keys = %w[format action controller]
         params = event.payload[:params].reject { |key,_| unwanted_keys.include? key }
-        {:params => params, :remote_ip => event.payload[:ip], :auth_token => event.payload[:auth_token], :lat => event.payload[:lat], :lng => event.payload[:lng  ], :response => event.payload[:response]}
+        {params:     params, 
+         remote_ip:  event.payload[:ip],
+         auth_token: event.payload[:auth_token],
+         lat:        event.payload[:lat],
+         lng:        event.payload[:lng],
+         response:   event.payload[:response]}
       end
       x
     end
 
     config = Config::ConfigurationObject.new('config/rogger.yml')
 
-    @@logger = GELF::Logger.new(
-      config.server_hostname, 
-      config.server_port, 
-      'WAN', 
-      { 
-        host: config.app_name,
-        environment: env,
-        protocol: config.protocol 
-      })
+    if config
 
-    @@notifier = GELF::Notifier.new(config.server_hostname, config.server_port)
+      @@logger = GELF::Logger.new(
+        config.server_hostname, 
+        config.server_port, 
+        'WAN', 
+        { 
+          host: config.app_name,
+          environment: env,
+          protocol: config.protocol 
+        })
 
-    if config.app_logging
-      if config.log_to_file
-        Rails.logger.extend(ActiveSupport::Logger.broadcast(@@logger))
-      else
-        Rails.logger = @@logger
-      end  
+      @@notifier = GELF::Notifier.new(config.server_hostname, config.server_port)
+
+      if config.app_logging
+        if config.log_to_file
+          Rails.logger.extend(ActiveSupport::Logger.broadcast(@@logger))
+        else
+          Rails.logger = @@logger
+        end  
+      end
+
     end
   end
   
