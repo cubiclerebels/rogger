@@ -2,8 +2,6 @@ default:
   host: 127.0.0.1
   port: 12201
   app_name: <%= Rails.application.class.parent if defined?(Rails) %>
-  app_logging: true
-  log_to_file: true
   protocol: udp
 
 development:
