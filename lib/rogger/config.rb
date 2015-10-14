@@ -9,7 +9,7 @@ module Rogger
 
       include Errors
       include Utils
-      attr_reader :protocol, :server_hostname, :server_port, :app_name, :app_logging, :log_to_file, :disabled
+      attr_reader :protocol, :server_hostname, :server_port, :app_name, :disabled #, :app_logging, :log_to_file
 
       def initialize(file_location)
         @config_file = YAML.load(ERB.new(File.read(file_location)).result)
@@ -18,13 +18,13 @@ module Rogger
 
         # short circuit initialization if disabled:true is set for current environment
         return nil if @disabled
-        
+
         @protocol          ||= set_protocol
         @server_hostname   ||= set_server_hostname
         @server_port       ||= set_server_port
         @app_name          ||= set_app_name
-        @app_logging       ||= set_app_logging
-        @log_to_file       ||= set_log_to_file
+        # @app_logging       ||= set_app_logging
+        # @log_to_file       ||= set_log_to_file
       end
 
       private
@@ -63,19 +63,19 @@ module Rogger
         end
       end
 
-      def set_app_logging
-        case @env_hash['app_logging']
-        when Utils::is_boolean(@env_hash['app_logging']) then @env_hash['app_logging']
-        else raise InvalidSettingError, "Please set to either true or false for app_logging setting"
-        end
-      end
+      # def set_app_logging
+      #   case @env_hash['app_logging']
+      #   when true, false then @env_hash['app_logging']
+      #   else raise InvalidSettingError, "Please set to either true or false for app_logging setting"
+      #   end
+      # end
 
-      def set_log_to_file
-        case @env_hash['log_to_file']
-        when Utils::is_boolean(@env_hash['log_to_file']) then @env_hash['log_to_file']
-        else raise InvalidSettingError, "Please set to either true or false for log_to_file setting"
-        end
-      end
+      # def set_log_to_file
+      #   case @env_hash['log_to_file']
+      #   when true, false then @env_hash['log_to_file']
+      #   else raise InvalidSettingError, "Please set to either true or false for log_to_file setting"
+      #   end
+      # end
     end
 
     def self.env
@@ -91,28 +91,6 @@ module Rogger
     # def self.notifier
     #   @@notifier
     # end
-
-    # def self.file_log
-    #   ActiveSupport::Logger.new("log/#{Rails.env}.log")
-    # end
-
-    def self.lograge
-      Rails.application.config.logger.extend(ActiveSupport::Logger.broadcast(@@logger))
-      x = Rails.application.config.lograge
-      x.enabled = true
-      x.formatter = Lograge::Formatters::Graylog2.new
-      x.custom_options = lambda do |event|
-        unwanted_keys = %w[format action controller]
-        params = event.payload[:params].reject { |key,_| unwanted_keys.include? key }
-        {params:     params, 
-         remote_ip:  event.payload[:ip],
-         auth_token: event.payload[:auth_token],
-         lat:        event.payload[:lat],
-         lng:        event.payload[:lng],
-         response:   event.payload[:response]}
-      end
-      x
-    end
 
     config = Config::ConfigurationObject.new('config/rogger.yml')
 
@@ -130,14 +108,8 @@ module Rogger
 
       @@notifier = GELF::Notifier.new(config.server_hostname, config.server_port)
 
-      if config.app_logging
-        if config.log_to_file
-          Rails.logger.extend(ActiveSupport::Logger.broadcast(@@logger))
-        else
-          Rails.logger = @@logger
-        end  
-      end
-
+      Rails.logger.extend(ActiveSupport::Logger.broadcast(@@logger))
+        
     end
   end
   
