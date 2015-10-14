@@ -39,7 +39,7 @@ In `config/rogger.yml`, change:
 - `host` to your Graylog2 server hostname or IP address
 - `port` to the port of the Graylog2 input
 - `app_name` to the name of the application
-- `protocol` defaults to UDP, but see below for TCP usage
+- `protocol` defaults to `udp`, but see below for `tcp` usage
 
 Each of these details can be overriden in the respective environment hashes.
 
