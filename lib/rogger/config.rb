@@ -12,17 +12,20 @@ module Rogger
       attr_reader :protocol, :server_hostname, :server_port, :app_name, :disabled
 
       def initialize(file_location)
-        @config_file = YAML.load(ERB.new(File.read(file_location)).result)
-        @env_hash    = @config_file[Config.env] || @config_file['default']
-        @disabled          ||= set_disabled
+        begin
+          @config_file = YAML.load(ERB.new(File.read(file_location)).result)
+          @env_hash    = @config_file[Config.env] || @config_file['default']
+          @disabled          ||= set_disabled
 
-        # short circuit initialization if disabled:true is set for current environment
-        return nil if @disabled
+          # short circuit initialization if disabled:true is set for current environment
+          return nil if @disabled
 
-        @protocol          ||= set_protocol
-        @server_hostname   ||= set_server_hostname
-        @server_port       ||= set_server_port
-        @app_name          ||= set_app_name
+          @protocol          ||= set_protocol
+          @server_hostname   ||= set_server_hostname
+          @server_port       ||= set_server_port
+          @app_name          ||= set_app_name
+        rescue
+        end
       end
 
       private
