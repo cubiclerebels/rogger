@@ -1,6 +1,10 @@
 # Rogger
 
-TODO: Write a gem description
+The easiest way to log your Rails apps to Graylog2!
+
+- TCP support with siawyoung's fork of `gelf-rb`
+- Highly recommened to be used in conjunction with Lograge
+  - Allows you to log many other things (Rack, params, sessions, etc.)
 
 ## Installation
 
@@ -20,44 +24,69 @@ Or install it yourself as:
 
 ## Usage
 
-To get started
+To get started, run the generator:
 
 ```bash
 $ rails g rogger:config
 ```
 
-## Disable application-level logging
+This generates two files; `config/initializers/rogger.rb` and the config file `config/rogger.yml`.
 
-To disallow Rogger from logging Rails application level messages, in your
-generated config/rogger.yml, set
+### Graylog server details
 
+In `config/rogger.yml`, change:
+
+- `host` to your Graylog2 server hostname or IP address
+- `port` to the port of the Graylog2 input
+- `app_name` to the name of the application
+- `protocol` defaults to UDP, but see below for TCP usage
+
+Each of these details can be overriden in the respective environment hashes.
+
+**Optional**
+
+Add `disabled: true` to either the default hash to disable Rogger entirely, or to any of the environment hashes to disable Rogger for specific environments.
+
+### Sending GELF over TCP
+
+Rogger also supports sending logs over TCP, something the official `gelf-rb` repository doesn't officially support yet (14th October 2015). This is useful if your Graylog2 servers are load-balanced with HAProxy, which only supports TCP.
+
+siawyoung forked v1.4.0 of `gelf-rb` and added TCP support, so in order to enable sending over TCP, you have to specify it as such in your Gemfile:
+
+```ruby
+gem 'gelf', github: 'siawyoung/gelf-rb'
 ```
-  app_logging: false
-```
+
+Once `gelf-rb` updates with TCP support, this will no longer be necessary.
 
 ## Setup logging
 
-With the rogger config setup, now you'll want to make sure you're sending your
-stuff to graylog. To do so, adjust your environments/*.rb file to add the
-following line:
+## Lograge
+
+Rogger works perfectly well with Lograge. In fact, we highly recommend using Lograge, as default Rails logging is too verbose for production debugging. 
+
+Lograge also comes with a Graylog2 formatter, which formats additional information in your payload in a way that presents very nicely in the Graylog2 web interface.
+
+Official installation instructions [here](https://github.com/roidrage/lograge).
+
+With Lograge, logging arbitrary information is super easy. For example, logging user IP addresses:
 
 ```ruby
-  require 'rogger/config'
-  config.lograge = Rogger::Config.lograge
-  config.logger = Rogger::Config.logger
+# production.rb
+config.lograge.enabled = true
+config.lograge.formatter = Lograge::Formatters::Graylog2.new
+config.lograge.custom_options = lambda do |event|
+  {remote_ip: event.payload[:ip]}
+end
+```
 
-  # Use this if you want to continue logging to your local file
-  Rails.logger.extend ActiveSupport::Logger.broadcast(Rogger::Config.file_log)
-````
-
-##
-## Disable local file logging (deprecated)
-
-By default, Rogger will extend itself from Rails logger, meaning that log messages will continue to log to local log files (`development.log` or `production.log`). To disable this and make Rogger the only logger, set `log_to_file` to `false`.
-
-TODO: Write usage instructions here
-
-
+```ruby
+# application_controller.rb
+def append_info_to_payload(payload)
+  super
+  payload[:ip] = request.headers['HTTP_X_REAL_IP'] || request.remote_ip
+end
+```
 
 ## Contributing
 
