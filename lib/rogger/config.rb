@@ -2,7 +2,7 @@ module Rogger
 
   require 'gelf'
   require 'yaml'
-  
+
   module Config
 
     class ConfigurationObject
@@ -12,20 +12,17 @@ module Rogger
       attr_reader :protocol, :server_hostname, :server_port, :app_name, :disabled
 
       def initialize(file_location)
-        begin
-          @config_file = YAML.load(ERB.new(File.read(file_location)).result)
-          @env_hash    = @config_file[Config.env] || @config_file['default']
-          @disabled          ||= set_disabled
+        config_file = YAML.load(ERB.new(File.read(file_location)).result)
+        @env_hash    = config_file[Config.env] || @config_file['default']
+        @disabled          ||= set_disabled
 
-          # short circuit initialization if disabled:true is set for current environment
-          return nil if @disabled
+        # short circuit initialization if disabled:true is set for current environment
+        return nil if @disabled
 
-          @protocol          ||= set_protocol
-          @server_hostname   ||= set_server_hostname
-          @server_port       ||= set_server_port
-          @app_name          ||= set_app_name
-        rescue
-        end
+        @protocol          ||= set_protocol
+        @server_hostname   ||= set_server_hostname
+        @server_port       ||= set_server_port
+        @app_name          ||= set_app_name
       end
 
       private
@@ -71,22 +68,21 @@ module Rogger
     end
 
     config = Config::ConfigurationObject.new('config/rogger.yml')
-
-    if config
+    unless config.disabled
 
       @@logger = GELF::Logger.new(
-        config.server_hostname, 
-        config.server_port, 
-        'WAN', 
-        { 
+        config.server_hostname,
+        config.server_port,
+        'WAN',
+        {
           host: config.app_name,
           environment: env,
-          protocol: config.protocol 
+          protocol: config.protocol
         })
 
       Rails.logger.extend(ActiveSupport::Logger.broadcast(@@logger))
-        
+
     end
   end
-  
+
 end

@@ -7,5 +7,4 @@ module Rogger
       @@logger.error e
     end
   end
-  
 end
