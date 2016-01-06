@@ -8,10 +8,11 @@ The easiest way to log your Rails apps to Graylog2!
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add the following to your application's Gemfile:
 
 ```ruby
 gem 'rogger', source: 'https://repo.fury.io/davidchua/'
+gem 'gelf' # for TCP support see below
 ```
 
 And then execute:
@@ -42,6 +43,46 @@ Each of these details can be overriden in the respective environment hashes.
 **Optional**
 
 Add `disabled: true` to either the default hash to disable Rogger entirely, or to any of the environment hashes to disable Rogger for specific environments.
+
+The following example disables Rogger entirely:
+
+```yaml
+default: &base
+  host: 123.123.123.123
+  port: 12200
+  app_name: <%= Rails.application.class.parent if defined?(Rails) %>
+  protocol: tcp
+  disabled: true
+
+development:
+  <<: *base
+
+staging:
+  <<: *base
+
+production:
+  <<: *base
+```
+
+This disables Rogger for the development environment:
+
+```yaml
+default: &base
+  host: 123.123.123.123
+  port: 12200
+  app_name: <%= Rails.application.class.parent if defined?(Rails) %>
+  protocol: tcp
+
+development:
+  <<: *base
+  disabled: true
+
+staging:
+  <<: *base
+
+production:
+  <<: *base
+```
 
 ### Sending GELF over TCP
 
