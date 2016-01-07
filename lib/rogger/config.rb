@@ -66,23 +66,23 @@ module Rogger
       return Sinatra::Base.environment.to_s if defined?(Sinatra)
       ENV["RACK_ENV"] || raise(Errors::NoEnvironment.new)
     end
+  end
 
-    config = Config::ConfigurationObject.new('config/rogger.yml')
-    unless config.disabled
+  config = Config::ConfigurationObject.new('config/rogger.yml')
+  unless config.disabled
 
-      @@logger = GELF::Logger.new(
-        config.server_hostname,
-        config.server_port,
-        'WAN',
-        {
-          host: config.app_name,
-          environment: env,
-          protocol: config.protocol
-        })
+    @@logger = GELF::Logger.new(
+      config.server_hostname,
+      config.server_port,
+      'WAN',
+      {
+        host: config.app_name,
+        environment: Config::env,
+        protocol: config.protocol
+      })
 
-      Rails.logger.extend(ActiveSupport::Logger.broadcast(@@logger))
+    Rails.logger.extend(ActiveSupport::Logger.broadcast(@@logger))
 
-    end
   end
 
 end
